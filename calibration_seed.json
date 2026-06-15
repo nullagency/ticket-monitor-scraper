@@ -1,0 +1,182 @@
+[
+  {
+    "eventId": "153020712",
+    "city": "inglewood",
+    "date": "2026-06-15",
+    "daysOut": 0
+  },
+  {
+    "eventId": "153022572",
+    "city": "miami",
+    "date": "2026-06-15",
+    "daysOut": 0
+  },
+  {
+    "eventId": "153022598",
+    "city": "east-rutherford",
+    "date": "2026-06-16",
+    "daysOut": 1
+  },
+  {
+    "eventId": "153022585",
+    "city": "foxborough",
+    "date": "2026-06-16",
+    "daysOut": 1
+  },
+  {
+    "eventId": "153021561",
+    "city": "kansas-city",
+    "date": "2026-06-16",
+    "daysOut": 1
+  },
+  {
+    "eventId": "153020625",
+    "city": "santa-clara",
+    "date": "2026-06-16",
+    "daysOut": 1
+  },
+  {
+    "eventId": "153021378",
+    "city": "arlington",
+    "date": "2026-06-17",
+    "daysOut": 2
+  },
+  {
+    "eventId": "153033433",
+    "city": "ciudad-de-mexico",
+    "date": "2026-06-17",
+    "daysOut": 2
+  },
+  {
+    "eventId": "153020837",
+    "city": "houston",
+    "date": "2026-06-17",
+    "daysOut": 2
+  },
+  {
+    "eventId": "153022614",
+    "city": "toronto",
+    "date": "2026-06-17",
+    "daysOut": 2
+  },
+  {
+    "eventId": "153022626",
+    "city": "atlanta",
+    "date": "2026-06-18",
+    "daysOut": 3
+  },
+  {
+    "eventId": "153020716",
+    "city": "inglewood",
+    "date": "2026-06-18",
+    "daysOut": 3
+  },
+  {
+    "eventId": "153020461",
+    "city": "vancouver",
+    "date": "2026-06-18",
+    "daysOut": 3
+  },
+  {
+    "eventId": "153033451",
+    "city": "zapopan",
+    "date": "2026-06-18",
+    "daysOut": 3
+  },
+  {
+    "eventId": "153022637",
+    "city": "foxborough",
+    "date": "2026-06-19",
+    "daysOut": 4
+  },
+  {
+    "eventId": "153022742",
+    "city": "philadelphia",
+    "date": "2026-06-19",
+    "daysOut": 4
+  },
+  {
+    "eventId": "153020644",
+    "city": "santa-clara",
+    "date": "2026-06-19",
+    "daysOut": 4
+  },
+  {
+    "eventId": "153020544",
+    "city": "seattle",
+    "date": "2026-06-19",
+    "daysOut": 4
+  },
+  {
+    "eventId": "153020842",
+    "city": "houston",
+    "date": "2026-06-20",
+    "daysOut": 5
+  },
+  {
+    "eventId": "153021562",
+    "city": "kansas-city",
+    "date": "2026-06-20",
+    "daysOut": 5
+  },
+  {
+    "eventId": "153033460",
+    "city": "monterrey",
+    "date": "2026-06-20",
+    "daysOut": 5
+  },
+  {
+    "eventId": "153022796",
+    "city": "toronto",
+    "date": "2026-06-20",
+    "daysOut": 5
+  },
+  {
+    "eventId": "153022910",
+    "city": "atlanta",
+    "date": "2026-06-21",
+    "daysOut": 6
+  },
+  {
+    "eventId": "153020717",
+    "city": "inglewood",
+    "date": "2026-06-21",
+    "daysOut": 6
+  },
+  {
+    "eventId": "153023087",
+    "city": "miami",
+    "date": "2026-06-21",
+    "daysOut": 6
+  },
+  {
+    "eventId": "154852936",
+    "city": "vancouver",
+    "date": "2026-06-21",
+    "daysOut": 6
+  },
+  {
+    "eventId": "153021379",
+    "city": "arlington",
+    "date": "2026-06-22",
+    "daysOut": 7
+  },
+  {
+    "eventId": "153023354",
+    "city": "east-rutherford",
+    "date": "2026-06-22",
+    "daysOut": 7
+  },
+  {
+    "eventId": "153023094",
+    "city": "philadelphia",
+    "date": "2026-06-22",
+    "daysOut": 7
+  },
+  {
+    "eventId": "153020662",
+    "city": "santa-clara",
+    "date": "2026-06-22",
+    "daysOut": 7
+  }
+]

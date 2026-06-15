@@ -1,0 +1,23 @@
+# Worker code is private — only the scraper goes to the public repo
+worker.js
+deploy.py
+auto_improve.py
+purge_*.py
+retro_*.py
+reattribute_*.py
+fix_*.py
+seed_history.py
+snapshots/
+.claude/
+.env
+*.env
+
+# Runtime artifacts
+/tmp/
+*.log
+.calib_rotate
+
+# Python
+__pycache__/
+*.pyc
+.venv/

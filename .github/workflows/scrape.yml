@@ -1,0 +1,44 @@
+name: Ticket Monitor Scraper
+
+on:
+  schedule:
+    # Every 15 minutes. GitHub Actions cron has ~5min jitter on shared runners, fine for our cadence.
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}  # manual trigger button in the UI
+
+concurrency:
+  group: scraper
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Run scraper
+        env:
+          CF_TRIGGER_TOKEN: ${{ secrets.CF_TRIGGER_TOKEN }}
+          CALIB_ROTATE_STATE: ${{ github.workspace }}/.calib_rotate
+          LOG_PATH: ${{ github.workspace }}/scraper.log
+        run: python local_scraper.py
+
+      - name: Upload log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scraper-log
+          path: scraper.log
+          if-no-files-found: ignore
+          retention-days: 7

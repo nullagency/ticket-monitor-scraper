@@ -21,7 +21,7 @@ CALIB_INGEST_URL = f"{BASE}/ingest-calibration?t={TOKEN}"
 _HERE = os.path.dirname(os.path.abspath(__file__))
 CALIB_SEED = os.path.join(_HERE, "calibration_seed.json")
 CALIB_ROTATE_STATE = os.environ.get("CALIB_ROTATE_STATE", "/tmp/local_scraper_rotate.txt")
-CALIB_PER_RUN = int(os.environ.get("CALIB_PER_RUN", "12"))
+CALIB_PER_RUN = int(os.environ.get("CALIB_PER_RUN", "30"))
 LOG_PATH = os.environ.get("LOG_PATH", "/tmp/local_scraper.log")
 
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
@@ -154,7 +154,15 @@ def scrape_one(s):
     try:
         html = fetch_html(s["url"])
         mins = parse_aria(html, s["game"])
-        return {"src": s["src"], "game": s["game"], "url": s["url"], "status": 200, "mins": mins}
+        # Structural-drift detection: if HTML is substantial (page loaded) but parser found
+        # zero buyable listings, the most likely cause is the site changed its DOM (the bug
+        # that bit us 2026-06-15 — StubHub retired the old sectionPopupData JSON, our regex
+        # silently matched nothing for weeks). Flag substantial-empty-parse so main() can
+        # decide whether to alert.
+        anchor_count = html.count('data-listing-id=') if html else 0
+        drift_suspect = (len(html) > 50000) and (len(mins) == 0) and (anchor_count == 0)
+        return {"src": s["src"], "game": s["game"], "url": s["url"], "status": 200, "mins": mins,
+                "_htmlLen": len(html or ""), "_anchorCount": anchor_count, "_driftSuspect": drift_suspect}
     except Exception as e:
         log(f"  FETCH FAIL {s['src']}/{s['game']}: {e}")
         return {"src": s["src"], "game": s["game"], "url": s["url"], "status": -1, "mins": [], "error": str(e)[:200]}
@@ -257,6 +265,32 @@ def ingest_calibration(polls):
     return code, body
 
 
+def post_drift_flag(suspects):
+    """POST a structural-drift flag to /improvement so it shows up on the dashboard."""
+    body = json.dumps({
+        "kind": "flag",
+        "summary": f"STRUCTURAL DRIFT — {len(suspects)} sources returned substantial HTML but zero parsed listings",
+        "details": (
+            "Most likely cause: the site changed its DOM (anchor `data-listing-id=` not present in "
+            f"loaded page). Affected sources: {', '.join(s['src']+'/'+s['game'] for s in suspects)}. "
+            "Investigate the parser before trusting subsequent data."
+        ),
+        "outcome": "noted",
+        "author": "auto",
+    }).encode()
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".json") as f:
+        f.write(body); tmp = f.name
+    try:
+        subprocess.run([
+            "curl", "-sS", "-m", "15", "-X", "POST", "-A", UA,
+            "-H", "Content-Type: application/json", "--data-binary", f"@{tmp}",
+            f"{BASE}/improvement?t={TOKEN}",
+        ], capture_output=True, timeout=20)
+    finally:
+        try: os.unlink(tmp)
+        except: pass
+
+
 def main():
     log("scrape start")
     # Phase A: Mike's 4 games (always all 8 sources)
@@ -266,8 +300,14 @@ def main():
         results.append(r)
         cheap = (r["mins"][0]["ppFrom"] if r["mins"] else None)
         qty   = (r["mins"][0].get("ticketCount") if r["mins"] else None)
-        log(f"  {s['src']:8} {s['game']}: status={r['status']} mins={len(r['mins'])} cheapest=${cheap} qty={qty}")
+        log(f"  {s['src']:8} {s['game']}: status={r['status']} mins={len(r['mins'])} cheapest=${cheap} qty={qty} htmlLen={r.get('_htmlLen',0)} anchors={r.get('_anchorCount',0)}")
         time.sleep(0.5)
+    # Structural-drift check: if ≥3 sources returned substantial HTML but no parsed listings
+    # AND no `data-listing-id` anchors, the parser is likely out of date. Flag loudly.
+    suspects = [r for r in results if r.get("_driftSuspect")]
+    if len(suspects) >= 3:
+        log(f"  ⚠️ STRUCTURAL DRIFT: {len(suspects)}/{len(results)} sources have substantial HTML but zero parsed listings — parser likely broken")
+        post_drift_flag(suspects)
     status, body = ingest(results)
     log(f"INGEST HTTP {status}: {body[:200]}")
     # Phase B: calibration batch (rotates through 30 next-7d games over multiple runs)
